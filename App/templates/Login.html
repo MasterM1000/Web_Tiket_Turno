@@ -1,0 +1,15 @@
+{%extends './Layout.html' %}
+{% block title %}Login administradores{% endblock %}
+{% block body %}
+<form action="/Adm" method="post" id="Acc_Adm">
+    <h1 style="text-align: center;">Inicio de sesión</h1>
+    <input type="text" name="username" class="form-control" placeholder="Usuario">
+    <input type="password" name="password" class="form-control" placeholder="Contraseña">
+    <br>
+  </form>
+  <br>
+  <button type="submit" form="Acc_Adm">Iniciar sesión</button>
+  <a href="/" target="_self">
+    <button>Regresar al inicio</button>
+  </a>
+{% endblock %}
