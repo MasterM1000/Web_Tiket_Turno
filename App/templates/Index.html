@@ -1,0 +1,17 @@
+{%extends './Layout.html' %}
+{% block title %}Index{% endblock %}
+{% block body %}
+<H1> Bienvenidos al sistema de tickets para asuntos escolares del estado de coahuila</H1>
+    <img class= "ImagenPrin" src="{{ url_for('static', filename='Imágenes/Imagen_Estado_Coahuila.jpg') }}" alt="Imagen del Estado de Coahuila">
+    <h2>Registrar nuevo ticket </h2>
+
+    <a href="/CTT" target="_self">
+        <button>Registrar</button>
+      </a>
+
+      <h2>Modificar ticket existente</h2>
+      
+    <a href="/MTE" target="_self">
+        <button>Modificar</button>
+      </a>
+{% endblock %}

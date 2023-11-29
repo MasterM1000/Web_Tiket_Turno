@@ -1,0 +1,103 @@
+{%extends './Layout.html' %}
+{% block title %}Modificar ticket{% endblock %}
+{% block CSSPAG %}<link rel="stylesheet" href="{{ url_for('static', filename='CSS/Diseño_Pag_CT.CSS') }}" >{% endblock %}
+{% block body %}
+<h1>Modifique los datos del ticket</h1>
+<fieldset>
+    <legend>Información requerida para modificar el ticket</legend>
+    <label>CURP:
+        <input type="text" name="CURP" placeholder="Ingrese una CURP" pattern="^[A-Z]{4}[0-9]{6}[A-Z]{6}[A-Z0-9]{1}[0-9]{1}$">
+    <label>Numero de cita:
+        <input type="text" name="Num_cita">
+        <button onclick="consultarTicket()">Consultar ticket</button>
+    </fieldset>
+<form action="/Mod_Ticket" method="post" id="formulario">
+    <fieldset>
+      <legend>Información del alumno</legend>
+      <label>Nombre del alumno:
+      <input type="text" name="nombre" placeholder="Nombre del alumno">
+      <label>Apellido paterno del alumno:
+      <input type="text" name="Apater" placeholder="Apellido paterno">
+      <label>Apellido materno del alumno:
+      <input type="text" name="Amater" placeholder="Apellido materno">
+      <br>
+      <label>Nivel que cursa:
+        <select name="Niv_Cur">
+          <option value="Preescolar">Preescolar</option>
+          <option value="Primaria">Primaria</option>
+          <option value="Secundaria">Secundaria</option>
+          <option value="Preparatoria">Preparatoria</option>
+          <option value="Universidad">Universidad</option>
+        </select>
+    </fieldset>
+
+    <fieldset>
+        <legend>Información de contacto:</legend>
+        <label>Correo:
+            <input type="email" name="correo" placeholder="Correo electrónico">
+            <label>Telefono:
+            <input type="tel" name="telefono" placeholder="Teléfono">
+            <label>¿Quién realizará el trámite?
+            <select name="QRT">
+              <option value="Padre">Padre</option>
+              <option value="Familiar">Familiar</option>
+              <option value="Tutor">Tutor</option>
+              <option value="Alumno">Alumno</option>
+            </select>
+
+            <label>¿Municipio donde se realizara el tramite?
+                <select name="Municipio">
+                  <option value="1">Abasolo</option>
+                  <option value="2">Acuña</option>
+                  <option value="3">Allende</option>
+                  <option value="4">Arteaga</option>
+                  <option value="5">Candela</option>
+                  <option value="6">Castaños</option>
+                  <option value="7">Cuatro Ciénegas</option>
+                  <option value="8">Escobedo</option>
+                  <option value="9">Francisco I. Madero</option>
+                  <option value="10">Frontera</option>
+                  <option value="11">General Cepeda</option>
+                  <option value="12">Guerrero</option>
+                  <option value="13">Hidalgo</option>
+                  <option value="14">Jiménez</option>
+                  <option value="15">Juárez</option>
+                  <option value="16">Lamadrid</option>
+                  <option value="17">Matamoros</option>
+                  <option value="18">Monclova</option>
+                  <option value="19">Morelos</option>
+                  <option value="20">Múzquiz</option>
+                  <option value="21">Nadadores</option>
+                  <option value="22">Nava</option>
+                  <option value="23">Ocampo</option>
+                  <option value="24">Parras</option>
+                  <option value="25">Piedras Negras</option>
+                  <option value="26">Progreso</option>
+                  <option value="27">Ramos Arizpe</option>
+                  <option value="28">Sabinas</option>
+                  <option value="29">Sacramento</option>
+                  <option value="30">Saltillo</option>
+                  <option value="31">San Buenaventura</option>
+                  <option value="32">San Juan de Sabinas</option>
+                  <option value="33">San Pedro</option>
+                  <option value="34">Sierra Mojada</option>
+                  <option value="35">Torreón</option>
+                  <option value="36">Viesca</option>
+                  <option value="37">Villa Unión</option>
+                  <option value="38">Zaragoza</option>
+                </select>
+      </fieldset>
+
+    <fieldset>
+      <legend>¿Qué asunto tratará?</legend>
+      <textarea name="Asunto" rows="5" cols="30" placeholder="Asunto a tratar"></textarea>
+    </fieldset>
+  </form>
+
+    <button type="submit" form="formulario">Registrar</button>
+    
+  <a href="/" target="_self">
+    <button>Regresar al inicio</button>
+  </a>
+
+{% endblock %}
