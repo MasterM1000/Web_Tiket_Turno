@@ -1,0 +1,16 @@
+{%extends './Layout.html' %}
+{% block title %}Eliminar cita{% endblock %}
+{% block body %}
+<h1>Eliminar ticket</h1>
+<form action="/Elim_ticket" method="post" id="form_Elim">
+    <fieldset>
+      <legend>Información requerida para eliminar el ticket</legend>
+      <label>CURP:
+        <input type="text" name="CURP" placeholder="Ingrese una CURP" pattern="^[A-Z]{4}[0-9]{6}[A-Z]{6}[A-Z0-9]{1}[0-9]{1}$">
+      <label>Número de cita:
+        <input type="text" name="Num_Cita" placeholder="Ingrese un ticket valido">
+    </fieldset>
+  </form>
+  <br>
+  <button type="submit" form="form_Elim">Eliminar ticket</button>
+{% endblock %}

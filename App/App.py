@@ -41,18 +41,18 @@ def PagAdm():
 def Mtt():
     DT = None  # Initialize a variable to store DT data
 
-  # Check if DT data is available in the session
+    # Check if DT data is available in the session
     if 'DT' in session:
         DT = session['DT']  # Get DT data from the session
 
-    return render_template('Pag_Adm.html', DT=DT)
+    return render_template('Modificar_Ticket.html', DT=DT)
 
 
-@app.route('/Crear_Ticket',methods=['POST'])
+@app.route('/Crear_Ticket', methods=['POST'])
 def Add_Ticket():
     if request.method == 'POST':
         CURP = request.form['CURP']
-        QRT =request.form['QRT']
+        QRT = request.form['QRT']
         Nom_Alm = request.form['nombre']
         Ape_Alm = request.form['Apater']
         Ama_Alm = request.form['Amater']
@@ -65,16 +65,17 @@ def Add_Ticket():
 
         try:
             # Connect to the database
-            cursor = mysql.connection.cursor()
+            cursor = mysql.connection
+            db = cursor.cursor()
 
-             # Update the number of appointments for the selected municipality
+            # Update the number of appointments for the selected municipality
             query1 = "UPDATE Municipio SET numero_citas = numero_citas + 1 WHERE Id_Municipio=%s;"
-            cursor.execute(query1, (Id_Municipio))
+            db.execute(query1.encode('UTF-8'), (Id_Municipio.encode('UTF-8')))
             mysql.connection.commit()
 
             # Get the current number of appointments for the selected municipality
             query2 = "SELECT numero_citas FROM Municipio WHERE Id_Municipio=%s;"
-            cursor.execute(query2, (Id_Municipio))
+            db.execute(query2.encode('UTF-8'), (Id_Municipio.encode('UTF-8')))
             result = cursor.fetchone()
 
             # If there is a result, get the number of appointments
@@ -83,7 +84,10 @@ def Add_Ticket():
 
             # Insert the new ticket into the database
             query3 = "INSERT INTO Cita (CURP, Qrt, Nom_Alm, Ape_Alm, Ama_Alm, telefono, correo, Niv_Cur, Asunto, Estado, Num_cita, Id_Municipio) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-            cursor.execute(query3, (CURP, QRT, Nom_Alm, Ape_Alm, Ama_Alm, Telefono, Correo, Niv_Cur, Asunto, Estado, num_cita, Id_Municipio))
+            db.execute(query3.encode('UTF-8'), (
+                CURP.encode('UTF-8'), QRT.encode('UTF-8'), Nom_Alm.encode('UTF-8'), Ape_Alm.encode('UTF-8'),
+                Ama_Alm.encode('UTF-8'), Telefono.encode('UTF-8'), Correo.encode('UTF-8'), Niv_Cur.encode('UTF-8'),
+                Asunto.encode('UTF-8'), Estado.encode('UTF-8'), num_cita, Id_Municipio.encode('UTF-8')))
             mysql.connection.commit()
 
             # Check if the ticket was inserted successfully
@@ -93,12 +97,12 @@ def Add_Ticket():
                 print("Su numero de ticket es: " + str(num_cita))
             else:
                 print("Error al registrar")
-
         except Exception as e:
-            print("Error al conectar con la base de datos"+e)
+            print("Error al conectar con la base de datos" + str(e))
 
         return redirect(url_for('Index'))
     
+
 @app.route('/Mod_Ticket', methods=["POST"])
 def Mod_ticket():
     # Retrieve form data
@@ -159,6 +163,40 @@ def consultar_ticket():
     else:
        session['DT'] = None
     return redirect(url_for('Mtt'))
+
+@app.route("/Elim_Cita")
+def Elim_Cita():
+    return render_template('Elim_Cita.html')
+
+@app.route("/Elim_ticket", methods=["POST"])
+def Elim_ticket():
+    CURP = request.form['CURP']
+    Num_Cita = request.form('Num_Cita')
+    if Num_Cita is None:
+        print("Ingrese una cita válida para eliminar.")
+
+    # Check if the entered CURP and Num_cita are valid
+    valid_appointment = False
+    cur = mysql.connection.cursor()
+    query = "SELECT EXISTS (SELECT * FROM Cita WHERE CURP = %s AND Num_cita = %s) AS Acc;"
+    cur.execute(query.encode('UTF-8'), (CURP.encode('UTF-8'), Num_Cita.encode('UTF-8')))
+    result = cur.fetchone()[0]
+    if result == 1:
+        valid_appointment = True
+
+    if valid_appointment:
+        # Delete the specified appointment
+        try:
+            query = "DELETE FROM Cita WHERE CURP = %s AND Num_cita = %s;"
+            cur.execute(query.encode('UTF-8'), (CURP.encode('UTF-8'), Num_Cita.encode('UTF-8')))
+            mysql.connection.commit()
+            print("Cita eliminada exitosamente.")
+        except Exception as e:
+            print("Error al eliminar la cita: " + e)
+    else:
+        print("Ingrese una cita válida para eliminar.")
+
+    return redirect(url_for('Elim_Cita'))
 
 
 
