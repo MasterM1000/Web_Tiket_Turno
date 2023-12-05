@@ -24,6 +24,10 @@ db_connection = Singleton.getInstance(app).mysql
 def Index():
     return render_template('Index.html')
 
+@app.route('/MET')
+def Mod_Est_Tick():
+    return render_template('Modificar_Estado.html')
+
 @app.route('/CTT')
 def Ctt():
     return render_template('Crear_Ticket.html')
@@ -31,41 +35,16 @@ def Ctt():
 @app.route('/LogAdm')
 def LoginAdm():
     return render_template('Login.html')
-
-@app.route('/Adm', methods=['POST'])
-def PagAdm():
-
-    Usuario = request.form['username']
-    contraseña = request.form['password']
-
-    cur1 = db_connection.connection.cursor()
-    query1 = 'SELECT EXISTS (SELECT * FROM administrador WHERE usuario = %s AND contraseña = %s) AS Acc;'
-    cur1.execute(query1.encode('UTF-8'), (Usuario.encode('UTF-8'), contraseña.encode('UTF-8')))
-    Bol = cur1.fetchone()[0]
-
-    if Bol == 1:
-         # Set cache control headers to prevent caching
-        cache_control = "no-cache, no-store, max-age=0"
-
-        # Render the template and assign it to a variable
-        template_content = render_template('Pag_Adm.html')
-
-        # Create a response object
-        response = Response(template_content)
-
-        # Set the Cache-Control header on the response object
-        response.headers['Cache-Control'] = cache_control
-
-        return response
-
-    else:
-        
-        return render_template('Login.html')
     
-@app.route('/logout')
-def logout():
-    session.clear()
+@app.route('/logout1')
+def logout1():
+    session["Inf_Li"] = None
     return redirect(url_for('LoginAdm'))
+
+@app.route('/logout2')
+def logout2():
+    session["Inf_Li"] = None
+    return redirect(url_for('Index'))
 
 
 @app.route('/MTE')
@@ -78,6 +57,56 @@ def Mtt():
 
     return render_template('Modificar_Ticket.html', DT=DT)
 
+
+@app.route('/Adm', methods=['POST', 'GET'])
+def PagAdm():
+    # Check if Inf_Li has information
+    if session.get("Inf_Li"):
+        # User is already logged in, access information
+        if request.method == 'GET':
+         user_info = session["Inf_Li"]
+         Usuario = user_info["username"]
+         contraseña = user_info["password"]
+         cur1 = db_connection.connection.cursor()
+         query1 = 'SELECT EXISTS (SELECT * FROM administrador WHERE usuario = %s AND contraseña = %s) AS Acc;'
+         cur1.execute(query1.encode('UTF-8'), (Usuario.encode('UTF-8'), contraseña.encode('UTF-8')))
+         Bol = cur1.fetchone()[0]
+         if Bol == 1:
+                print(user_info)
+                return render_template('Pag_Adm.html')
+         else:
+                # Login failed, show error or redirect to login page
+                print('No se a iniciado secion')
+                return render_template('Login.html')
+
+    else:
+        # User is not logged in, check for login attempt
+        if request.method == 'POST':
+            Usuario = request.form['username']
+            contraseña = request.form['password']
+
+            cur1 = db_connection.connection.cursor()
+            query1 = 'SELECT EXISTS (SELECT * FROM administrador WHERE usuario = %s AND contraseña = %s) AS Acc;'
+            cur1.execute(query1.encode('UTF-8'), (Usuario.encode('UTF-8'), contraseña.encode('UTF-8')))
+            Bol = cur1.fetchone()[0]
+
+            if Bol == 1:
+                # User login successful, store information and redirect
+                Inf_Li = {
+                    "username": Usuario,
+                    "password": contraseña,
+                }
+                session["Inf_Li"] = Inf_Li
+                return render_template('Pag_Adm.html')
+            else:
+                # Login failed, show error or redirect to login page
+                print('Usuario o contraseña incorrecto')
+                return render_template('Login.html')
+
+        else:
+            # User is not logged in and not attempting to login, print message
+            print('Control')
+            return render_template('Login.html')
 
 @app.route('/Crear_Ticket',methods=['POST'])
 def Add_Ticket():
@@ -233,7 +262,33 @@ def Elim_ticket():
     print("Ingrese una cita válida para eliminar.")
     return redirect(url_for('Elim_Cita'))
 
+@app.route('/Mod_Est_Ticket', methods=["POST"])
+def MET():
+    CURP = request.form['CURP']
+    Num_Cita = request.form['Num_Cita']
+    Estado = request.form['Estado']
+    cur = db_connection.connection.cursor()
+    query = "SELECT EXISTS (SELECT * FROM Cita WHERE CURP = %s AND Num_cita = %s) AS Acc;"
+    cur.execute(query.encode('UTF-8'), (CURP.encode('UTF-8'), Num_Cita.encode('UTF-8')))
+    result = cur.fetchone()[0]
 
+    if result == 1:
+        try:
+            # Delete the specified appointment
+            query = "UPDATE Cita SET Estado = %s WHERE CURP = %s;"
+            cur.execute(query.encode('UTF-8'), (Estado,CURP) )
+            db_connection.connection.commit()
+            print("Estado modificado exitosamente.")
+            return redirect(url_for('Mod_Est_Tick'))
+        
+        except Exception as e:
+            print("Error al modificar el estado: " + str(e))
+            return redirect(url_for('Mod_Est_Tick'))
+    else:
+        # Display error message if the ticket is invalid
+         print("Ingrese una cita válida para modificar el estado.")
+         return redirect(url_for('Mod_Est_Tick'))
+        
 def P_N_E(error):
     return render_template('404.html'), 404
 

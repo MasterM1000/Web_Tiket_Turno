@@ -1,0 +1,23 @@
+{%extends './Layout.html' %}
+{% block title %}Modificar estado cita{% endblock %}
+{% block body %}
+<h1>Modificar estado ticket</h1>
+<form action="/Mod_Est_Ticket" method="post" id="form_MET">
+    <fieldset>
+      <legend>Información requerida para modificar el estado del ticket</legend>
+      <label>CURP:
+        <input type="text" name="CURP" placeholder="Ingrese una CURP" pattern="^[A-Z]{4}[0-9]{6}[A-Z]{6}[A-Z0-9]{1}[0-9]{1}$">
+        <br>
+      <label>Número de cita:
+        <input type="text" name="Num_Cita" placeholder="Ingrese un ticket valido">
+        <br>
+        <label>Estado de cita:
+            <select name="Estado">
+                <option value="Pendiente">Pendiente</option>
+                <option value="Resuelto">Resuelto</option>
+              </select>    
+    </fieldset>
+  </form>
+  <br>
+  <button type="submit" form="form_MET">Modificar ticket</button>
+{% endblock %}
