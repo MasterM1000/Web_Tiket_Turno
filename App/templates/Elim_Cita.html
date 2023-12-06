@@ -17,4 +17,14 @@
     <button>Regresar a la pagina de administradores</button>
   </a>
 
+  <div class="flash-messages">
+    {% if get_flashed_messages() %}
+        <ul>
+            {% for message in get_flashed_messages() %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+  </div>
+
 {% endblock %}

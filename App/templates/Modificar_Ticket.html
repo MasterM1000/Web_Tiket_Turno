@@ -1,73 +1,93 @@
-{%extends './Layout.html' %}
+{% extends './Layout.html' %}
 {% block title %}Modificar ticket{% endblock %}
-{% block CSSPAG %}<link rel="stylesheet" href="{{ url_for('static', filename='CSS/Diseño_Pag_CT.CSS') }}" >{% endblock %}
+{% block CSSPAG %}<link rel="stylesheet" href="{{ url_for('static', filename='CSS/Diseño_Pag_CT.css') }}" >{% endblock %}
 {% block body %}
 <h1>Modifique los datos del ticket</h1>
+
 <form action="/consultar_ticket" method="post">
-<fieldset>
+  <fieldset>
     <legend>Información requerida para modificar el ticket</legend>
     <label>CURP:
-        <input type="text" name="CURP" placeholder="Ingrese una CURP" pattern="^[A-Z]{4}[0-9]{6}[A-Z]{6}[A-Z0-9]{1}[0-9]{1}$"value="{{ DT.0 }}">
+      <input type="text" name="CURP" placeholder="Ingrese una CURP" pattern="^[A-Z]{4}[0-9]{6}[A-Z]{6}[A-Z0-9]{1}[0-9]{1}$" value="{{ DT.0 }}">
+    </label>
     <label>Numero de cita:
-        <input type="text" name="Num_cita" value="{{ DT.10 }}" placeholder="Ingrese un ticket valido">
-        <button>Consultar ticket</button>
-    </fieldset>
-  </form>
+      <input type="text" name="Num_cita" value="{{ DT.10 }}" placeholder="Ingrese un ticket valido">
+      <button>Consultar ticket</button>
+    </label>
+  </fieldset>
+</form>
 
 <form action="/Mod_Ticket" method="post" id="form_Mod">
-    <fieldset>
-      <input type="hidden" name="CURP" value="{{ DT.0 }}">
-      <legend>Información del alumno</legend>
-      <label>Nombre del alumno:
+  <fieldset>
+    <input type="hidden" name="CURP" value="{{ DT.0 }}">
+    <legend>Información del alumno</legend>
+    <label>Nombre del alumno:
       <input type="text" name="nombre" placeholder="Nombre del alumno" value="{{ DT.2 }}">
-      <label>Apellido paterno del alumno:
+    </label>
+    <label>Apellido paterno del alumno:
       <input type="text" name="Apater" placeholder="Apellido paterno" value="{{ DT.3 }}">
-      <label>Apellido materno del alumno:
+    </label>
+    <label>Apellido materno del alumno:
       <input type="text" name="Amater" placeholder="Apellido materno" value="{{ DT.4 }}">
-      <br>
-      <label>Nivel que cursa:
-        <select name="Niv_Cur">
-          <option value="Preescolar">Preescolar</option>
-          <option value="Primaria">Primaria</option>
-          <option value="Secundaria">Secundaria</option>
-          <option value="Preparatoria">Preparatoria</option>
-          <option value="Universidad">Universidad</option>
-        </select>
-    </fieldset>
-
-    <fieldset>
-        <legend>Información de contacto:</legend>
-        <label>Correo:
-            <input type="email" name="correo" placeholder="Correo electrónico" value="{{ DT.6 }}">
-            <label>Telefono:
-            <input type="tel" name="telefono" placeholder="Teléfono" value="{{ DT.5 }}">
-            <label>¿Quién realizará el trámite?
-            <select name="QRT">
-              <option value="Padre">Padre</option>
-              <option value="Familiar">Familiar</option>
-              <option value="Tutor">Tutor</option>
-              <option value="Alumno">Alumno</option>
-            </select>
-            <br>
-                <label>¿Asunto que se realizara en el tramite?
-                  <select name="Asunto">
-                    {% for asunto in asuntos %}
-                 <option value="{{ asunto[0] }}">{{ asunto[0] }}</option>
-                 {% endfor %}
-
-      </fieldset>
-  </form>
-  
-  <label>Modificar ticket
-    <button type="submit" form="form_Mod">Modificar</button>
+    </label>
     <br>
-      <label>Regresar a la pagina de administradores
-      <a href="/Adm" target="_self">
-        <button>Regresar</button>
-      </a>
-      <label>Regresar a la pagina de inicio
-    <a href="/" target="_self">
-      <button>Regresar</button>
-    </a>
+    <label>Nivel que cursa:
+      <select name="Niv_Cur">
+        <option value="Preescolar">Preescolar</option>
+        <option value="Primaria">Primaria</option>
+        <option value="Secundaria">Secundaria</option>
+        <option value="Preparatoria">Preparatoria</option>
+        <option value="Universidad">Universidad</option>
+      </select>
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Información de contacto:</legend>
+    <label>Correo:
+      <input type="email" name="correo" placeholder="Correo electrónico" value="{{ DT.6 }}">
+    </label>
+    <label>Telefono:
+      <input type="tel" name="telefono" placeholder="Teléfono" value="{{ DT.5 }}">
+    </label>
+    <label>¿Quién realizará el trámite?
+      <select name="QRT">
+        <option value="Padre">Padre</option>
+        <option value="Familiar">Familiar</option>
+        <option value="Tutor">Tutor</option>
+        <option value="Alumno">Alumno</option>
+      </select>
+    </label>
+    <br>
+    <label>¿Asunto que se realizara en el tramite?
+      <select name="Asunto">
+        {% for asunto in asuntos %}
+          <option value="{{ asunto[0] }}">{{ asunto[0] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </fieldset>
+</form>
+
+<label>Modificar ticket
+  <button type="submit" form="form_Mod">Modificar</button>
+</label>
+<br>
+<a href="/Adm" target="_self">
+  <button>Regresar a la pagina de administradores</button>
+</a>
+<a href="/" target="_self">
+  <button>Regresar a la pagina de inicio</button>
+</a>
+
+<div class="flash-messages">
+  {% if get_flashed_messages() %}
+      <ul>
+          {% for message in get_flashed_messages() %}
+              <li>{{ message }}</li>
+          {% endfor %}
+      </ul>
+  {% endif %}
+</div>
 
 {% endblock %}

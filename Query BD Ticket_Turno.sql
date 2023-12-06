@@ -82,6 +82,12 @@ INSERT INTO Municipio (Nombre, numero_citas) VALUES
     ('Villa Unión', 0),
     ('Zaragoza', 0);
     
+    CREATE TABLE Asuntos (
+    Id_Asunto INT AUTO_INCREMENT PRIMARY KEY,
+    Asunto VARCHAR(50) NOT NULL,
+    N_R_A INT NOT NULL
+)
+    
 
 
 

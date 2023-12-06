@@ -1,24 +1,11 @@
-from flask import Flask, render_template,url_for, request, redirect,Response,session
+from flask import Flask, render_template,url_for, request, redirect,Response,session,send_file,flash
 from Singleton import Singleton
 from Config import config
-#from flask_login import login_required, current_user,LoginManager,UserMixin
-#from werkzeug.security import check_password_hash
+#from weasyprint import HTML
+from reportlab.pdfgen import canvas
+
 app = Flask(__name__)
-
 db_connection = Singleton.getInstance(app).mysql
-
-#class User(UserMixin):
-   # def __init__(self, user_id, username, password_hash):
-        #self.id = user_id
-        #self.username = username
-       # self.password_hash = password_hash
-
-#def load_user(user_id):
-   # user = User.query.get(user_id)
-    #if user is not None:
-   #     return user
-    #return None
-
 
 @app.route('/')
 def Index():
@@ -62,13 +49,16 @@ def Elim_Cita():
     
 @app.route('/MTE')
 def Mtt():
+    cursor = db_connection.connection.cursor()
+    cursor.execute("SELECT Asunto FROM Asuntos")
+    asuntos = cursor.fetchall()
     DT = None  # Initialize a variable to store DT data
 
     # Check if DT data is available in the session
     if 'DT' in session:
         DT = session['DT']  # Get DT data from the session
 
-    return render_template('Modificar_Ticket.html', DT=DT)
+    return render_template('Modificar_Ticket.html', DT=DT,asuntos=asuntos)
 
 @app.route('/PCA')
 def PCA():
@@ -198,7 +188,6 @@ def Add_Ticket():
         Asunto = request.form['Asunto']
         Id_Municipio = request.form['Municipio']
         Estado = 'Pendiente'
-        print(Id_Municipio)
 
         try:
             # Connect to the database
@@ -225,13 +214,28 @@ def Add_Ticket():
             # Check if the ticket was inserted successfully
             if cursor.rowcount > 0:
                 # Show success message and assigned ticket number
-                print("Se guardó correctamente el nuevo ticket")
-                print("Su numero de ticket es: " + str(num_cita))
+              # Generar el PDF
+                pdf = canvas.Canvas("ticket.pdf")
+                pdf.setFont("Helvetica", 12)
+
+              # Agregar datos del ticket
+                pdf.drawString(100, 700, "Se guardó correctamente el nuevo ticket")
+                pdf.drawString(100, 720, "CURP: " + CURP)
+                pdf.drawString(100, 750, "Número de ticket: " + str(num_cita))
+
+             # Guardar el PDF
+                pdf.save()
+
+            # Descargar el PDF
+                return send_file("ticket.pdf", as_attachment=True, attachment_filename="ticket.pdf", save_as=True, download_path="/Descargas")
+
+                #print("Se guardó correctamente el nuevo ticket")
+                #print("Su numero de ticket es: " + str(num_cita))
             else:
-                print("Error al registrar")
+                flash("Error al registrar")
 
         except Exception as e:
-            print("Error al conectar con la base de datos "+ str(e))
+            flash("Error al conectar con la base de datos "+ str(e))
 
         return redirect(url_for('Index'))
     
@@ -262,18 +266,14 @@ def Mod_ticket():
         # Check if the update was successful
         rows_updated = db.rowcount
         if rows_updated > 0:
-            # Update successful, display success message
-            print('Ticket updated successfully')
+            flash("Ticket actualizado correctamente")
         else:
-            # Update failed, display error message
-            print('Failed to update ticket')
+            flash("Error al actualizar el ticket")
 
     except Exception as e:
-        # Handle database-related errors
-        print('Error: ' + e)
-
+            flash("Error: " + str(e))
     session['DT'] = None
-    return redirect(url_for('Index'))
+    return redirect(url_for('Mtt'))
 
     
 @app.route("/consultar_ticket", methods=["POST"])
@@ -323,11 +323,11 @@ def Elim_ticket():
             query = "DELETE FROM Cita WHERE CURP = %s AND Num_cita = %s;"
             cur.execute(query.encode('UTF-8'), (CURP.encode('UTF-8'), Num_Cita.encode('UTF-8')))
             db_connection.connection.commit()
-            print("Cita eliminada exitosamente.")
+            flash("Cita eliminada exitosamente.")
             return redirect(url_for('Elim_Cita'))
         
         except Exception as e:
-            print("Error al eliminar la cita: " + e)
+            flash("Error al eliminar la cita: " + e)
             return redirect(url_for('Elim_Cita'))
 
     # Display error message if the ticket is invalid
