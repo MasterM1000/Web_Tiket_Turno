@@ -26,11 +26,18 @@ def Index():
 
 @app.route('/MET')
 def Mod_Est_Tick():
-    return render_template('Modificar_Estado.html')
+    if session.get("Inf_Li"):
+      return render_template('Modificar_Estado.html')
+    else:
+         return render_template('Err_Login.html')
+    
 
 @app.route('/CTT')
 def Ctt():
-    return render_template('Crear_Ticket.html')
+    cursor = db_connection.connection.cursor()
+    cursor.execute("SELECT Asunto FROM Asuntos")
+    asuntos = cursor.fetchall()
+    return render_template('Crear_Ticket.html', asuntos=asuntos)
 
 @app.route('/LogAdm')
 def LoginAdm():
@@ -46,7 +53,13 @@ def logout2():
     session["Inf_Li"] = None
     return redirect(url_for('Index'))
 
-
+@app.route("/Elim_Cita")
+def Elim_Cita():
+     if session.get("Inf_Li"):
+      return render_template('Elim_Cita.html')
+     else:
+         return render_template('Err_Login.html')
+    
 @app.route('/MTE')
 def Mtt():
     DT = None  # Initialize a variable to store DT data
@@ -57,6 +70,47 @@ def Mtt():
 
     return render_template('Modificar_Ticket.html', DT=DT)
 
+@app.route('/PCA')
+def PCA():
+     if session.get("Inf_Li"):
+      return render_template('Pag_Cre_Adm.html')
+     else:
+         return render_template('Err_Login.html')
+     
+@app.route('/PMA')
+def PMA():
+     if session.get("Inf_Li"):
+      return render_template('Pag_Mod_Adm.html')
+     else:
+         return render_template('Err_Login.html')     
+
+@app.route('/PEA')
+def PEA():
+     if session.get("Inf_Li"):
+      return render_template('Pag_Elim_Adm.html')
+     else:
+         return render_template('Err_Login.html') 
+     
+@app.route('/PCAST')
+def PCAST():
+    if session.get("Inf_Li"):
+      return render_template('Pag_Cre_Ast.html')
+    else:
+         return render_template('Err_Login.html') 
+    
+@app.route('/PMAST')
+def PMAST():
+    if session.get("Inf_Li"):
+      return render_template('Pag_Mod_Ast.html')
+    else:
+         return render_template('Err_Login.html') 
+    
+@app.route('/PEAST')
+def PEAST():
+    if session.get("Inf_Li"):
+      return render_template('Pag_Elim_Ast.html')
+    else:
+         return render_template('Err_Login.html') 
 
 @app.route('/Adm', methods=['POST', 'GET'])
 def PagAdm():
@@ -77,6 +131,28 @@ def PagAdm():
          else:
                 # Login failed, show error or redirect to login page
                 print('No se a iniciado secion')
+                return render_template('Login.html')
+         
+        if request.method == 'POST':
+            Usuario = request.form['username']
+            contraseña = request.form['password']
+
+            cur1 = db_connection.connection.cursor()
+            query1 = 'SELECT EXISTS (SELECT * FROM administrador WHERE usuario = %s AND contraseña = %s) AS Acc;'
+            cur1.execute(query1.encode('UTF-8'), (Usuario.encode('UTF-8'), contraseña.encode('UTF-8')))
+            Bol = cur1.fetchone()[0]
+
+            if Bol == 1:
+                # User login successful, store information and redirect
+                Inf_Li = {
+                    "username": Usuario,
+                    "password": contraseña,
+                }
+                session["Inf_Li"] = Inf_Li
+                return render_template('Pag_Adm.html')
+            else:
+                # Login failed, show error or redirect to login page
+                print('Usuario o contraseña incorrecto')
                 return render_template('Login.html')
 
     else:
@@ -221,10 +297,6 @@ def consultar_ticket():
        session['DT'] = None
     return redirect(url_for('Mtt'))
 
-@app.route("/Elim_Cita")
-def Elim_Cita():
-    return render_template('Elim_Cita.html')
-
 @app.route('/Elim_ticket', methods=["POST"])
 def Elim_ticket():
     CURP = request.form['CURP']
@@ -288,6 +360,126 @@ def MET():
         # Display error message if the ticket is invalid
          print("Ingrese una cita válida para modificar el estado.")
          return redirect(url_for('Mod_Est_Tick'))
+
+
+@app.route('/Crear_Adm', methods=["POST"])
+def FCA():
+    if request.method == 'POST':
+        Id_Adm = request.form['Usuario']
+        Contraseña =request.form['Contraeña']
+        Cur = db_connection.connection.cursor()
+        QR1='SELECT EXISTS (SELECT * FROM administrador WHERE usuario = %s) AS Acc;'
+        Cur.execute(QR1,(Id_Adm,))
+        EU = Cur.fetchone()[0]
+        if EU == 0: 
+            QR2 = "INSERT INTO Administrador (usuario, contraseña) VALUES (%s, %s);"
+            Cur.execute(QR2,(Id_Adm,Contraseña))
+            db_connection.connection.commit()
+            print('Nuevo administrador añadido exitosamente')
+            return redirect(url_for('PCA'))
+        else:
+            print('El administrador ya esta registrado')  
+            return redirect(url_for('PCA'))  
+        
+@app.route('/Mod_Adm', methods=["POST"])
+def FMA(): 
+    if request.method == 'POST':
+        Id_Adm = request.form['Usuario']
+        Contraseña =request.form['Contraeña']
+        Cur = db_connection.connection.cursor()
+        QR1='SELECT EXISTS (SELECT * FROM administrador WHERE usuario = %s) AS Acc;'
+        Cur.execute(QR1,(Id_Adm,))
+        # EU = Existe Usuario
+        EU = Cur.fetchone()[0]
+        if EU == 1: 
+            QR2 = "UPDATE Administrador SET contraseña = %s WHERE Usuario = %s;"
+            Cur.execute(QR2,(Contraseña,Id_Adm))
+            db_connection.connection.commit()
+            print('Administrador modificado exitosamente')
+            return redirect(url_for('PMA'))
+        else:
+            print('El administrador no esta registrado')  
+            return redirect(url_for('PMA'))  
+        
+@app.route('/Elim_Adm', methods=["POST"])
+def FEA(): 
+    if request.method == 'POST':
+        Id_Adm = request.form['Usuario']
+        Cur = db_connection.connection.cursor()
+        QR1='SELECT EXISTS (SELECT * FROM administrador WHERE usuario = %s) AS Acc;'
+        Cur.execute(QR1,(Id_Adm,))
+        # EU = Existe Usuario
+        EU = Cur.fetchone()[0]
+        if EU == 1: 
+            QR2 = "DELETE FROM administrador WHERE usuario = %s;"
+            Cur.execute(QR2,(Id_Adm,))
+            db_connection.connection.commit()
+            print('Administrador eliminado exitosamente')
+            return redirect(url_for('PEA'))
+        else:
+            print('El administrador no esta registrado')  
+            return redirect(url_for('PEA'))  
+
+@app.route('/Crear_Ast', methods=["POST"])
+def FCAST():
+     if request.method == 'POST':
+        Asunto = request.form['Asunto']
+        Cur = db_connection.connection.cursor()
+        QR1='SELECT EXISTS (SELECT * FROM Asuntos WHERE Asunto = %s) AS Acc;'
+        Cur.execute(QR1,(Asunto,))
+        EU = Cur.fetchone()[0]
+        if EU == 0: 
+            QR2 = "INSERT INTO Asuntos (Asunto,N_R_A) VALUES (%s,0);"
+            Cur.execute(QR2,(Asunto,))
+            db_connection.connection.commit()
+            print('Nuevo asunto añadido exitosamente')
+            return redirect(url_for('PCAST'))
+        else:
+            print('El asunto ya esta existe')  
+            return redirect(url_for('PCAST'))  
+        
+@app.route('/Mod_Ast', methods=["POST"])
+def FMAST():
+     if request.method == 'POST':
+        AnAsunto = request.form['An_Asunto']
+        Nuv_Asu = request.form['Nuv_Asunto']
+        Cur = db_connection.connection.cursor()
+        QR1='SELECT EXISTS (SELECT * FROM Asuntos WHERE Asunto = %s) AS Acc;'
+        Cur.execute(QR1,(AnAsunto,))
+        EU = Cur.fetchone()[0]
+        QR2='SELECT * FROM Asuntos WHERE Asunto = %s'
+        Cur.execute(QR2,(AnAsunto,))
+        Id_Asunto = Cur.fetchone()[0]
+        if EU == 1: 
+            QR3 = "UPDATE Asuntos SET Asunto = %s WHERE Id_Asunto = %s;"
+            Cur.execute(QR3,(Nuv_Asu,Id_Asunto))
+            db_connection.connection.commit()
+            print('Asunto modificado exitosamente')
+            return redirect(url_for('PMAST'))
+        else:
+            print('El asunto no existe')  
+            return redirect(url_for('PMAST'))  
+        
+@app.route('/Eliminar_Ast', methods=["POST"])
+def FEAST():
+    if request.method == 'POST':
+        Asunto = request.form['Asunto']
+        Cur = db_connection.connection.cursor()
+        QR1='SELECT EXISTS (SELECT * FROM Asuntos WHERE Asunto = %s) AS Acc;'
+        Cur.execute(QR1,(Asunto,))
+        EU = Cur.fetchone()[0]
+        QR2='SELECT * FROM Asuntos WHERE Asunto = %s'
+        Cur.execute(QR2,(Asunto,))
+        Id_Asunto = Cur.fetchone()[0]
+        if EU == 1: 
+            QR3 = "DELETE FROM Asuntos WHERE Id_Asunto = %s;"
+            Cur.execute(QR3,(Id_Asunto,))
+            db_connection.connection.commit()
+            print('Asunto eliminado exitosamente')
+            return redirect(url_for('PEAST'))
+        else:
+            print('El asunto no existe')  
+            return redirect(url_for('PEAST'))
         
 def P_N_E(error):
     return render_template('404.html'), 404

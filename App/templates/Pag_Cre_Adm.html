@@ -1,0 +1,18 @@
+{%extends './Layout.html' %}
+{% block title %}Crear administrador{% endblock %}
+{% block body %}
+<h1>Registre los datos para crear un nuevo administrador</h1>
+<form action="/Crear_Adm" method="post" id="Cre_Adm">
+<fieldset>
+    <label>Id del Usuario:
+    <input type="text" name="Usuario" placeholder="Ingrese un nuevo id de administrador" pattern="[0-9]{1,10}">
+      <label>Contraseña del Usuario:
+      <input type="text" name="Contraeña" placeholder="Ingrese la contraeña ">
+</fieldset>
+</form>
+<br>
+<button type="submit" form="Cre_Adm">Registrar</button>
+<a href="/Adm" target="_self">
+    <button>Regresar a la pagina de administradores</button>
+  </a>
+{% endblock %}

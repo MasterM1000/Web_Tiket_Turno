@@ -1,0 +1,16 @@
+{%extends './Layout.html' %}
+{% block title %}Eliminar administrador{% endblock %}
+{% block body %}
+<h1>Registre los datos para eliminar el administrador</h1>
+<form action="/Elim_Adm" method="post" id="Elim_Adm">
+<fieldset>
+    <label>Id del Usuario:
+    <input type="text" name="Usuario" placeholder="Ingrese el id del administrador" pattern="[0-9]{1,10}">
+</fieldset>
+</form>
+<br>
+<button type="submit" form="Elim_Adm">Eliminar</button>
+<a href="/Adm" target="_self">
+    <button>Regresar a la pagina de administradores</button>
+  </a>
+{% endblock %}

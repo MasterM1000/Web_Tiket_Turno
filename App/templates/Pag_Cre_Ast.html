@@ -1,0 +1,16 @@
+{%extends './Layout.html' %}
+{% block title %}Crear asunto{% endblock %}
+{% block body %}
+<h1>Registre los datos para crear un nuevo asunto</h1>
+<form action="/Crear_Ast" method="post" id="Cre_Ast">
+<fieldset>
+    <label>Ingrese el nuevo asunto:
+    <input type="text" name="Asunto" placeholder="Ingrese un nuevo asunto">
+</fieldset>
+</form>
+<br>
+<button type="submit" form="Cre_Ast">Registrar</button>
+<a href="/Adm" target="_self">
+    <button>Regresar a la pagina de administradores</button>
+  </a>
+{% endblock %}

@@ -1,0 +1,16 @@
+{%extends './Layout.html' %}
+{% block title %}Eliminar asunto{% endblock %}
+{% block body %}
+<h1>Registre los datos para eliminar el asunto</h1>
+<form action="/Eliminar_Ast" method="post" id="Elim_Ast">
+<fieldset>
+    <label>Ingrese el asunto:
+    <input type="text" name="Asunto" placeholder="Ingrese el asunto a eliminar">
+</fieldset>
+</form>
+<br>
+<button type="submit" form="Elim_Ast">Eliminar</button>
+<a href="/Adm" target="_self">
+    <button>Regresar a la pagina de administradores</button>
+  </a>
+{% endblock %}

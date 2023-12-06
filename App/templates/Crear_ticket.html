@@ -38,7 +38,7 @@
               <option value="Tutor">Tutor</option>
               <option value="Alumno">Alumno</option>
             </select>
-
+             <br>
             <label>¿Municipio donde se realizara el tramite?
                 <select name="Municipio">
                   <option value="1">Abasolo</option>
@@ -80,18 +80,26 @@
                   <option value="37">Villa Unión</option>
                   <option value="38">Zaragoza</option>
                 </select>
+                <br>
+                <label>¿Asunto que se realizara en el tramite?
+                  <select name="Asunto">
+                    {% for asunto in asuntos %}
+                 <option value="{{ asunto[0] }}">{{ asunto[0] }}</option>
+                 {% endfor %}
+                  </select>
+
       </fieldset>
-
-    <fieldset>
-      <legend>¿Qué asunto tratará?</legend>
-      <textarea name="Asunto" rows="5" cols="30" placeholder="Asunto a tratar"></textarea>
-    </fieldset>
   </form>
-
+  <label>Registrar nuevo ticket
     <button type="submit" form="formulario">Registrar</button>
-
+    <br>
+    <label>Regresar a la pagina de administradores
+    <a href="/Adm" target="_self">
+      <button>Regresar</button>
+    </a>
+    <label>Regresar a la pagina de inicio
   <a href="/" target="_self">
-    <button>Regresar al inicio</button>
+    <button>Regresar</button>
   </a>
 
 {% endblock %}

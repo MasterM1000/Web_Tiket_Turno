@@ -1,0 +1,14 @@
+{%extends './Layout.html' %}
+{% block title %}Se requiere inicio de secion{% endblock %}
+{% block body %}
+<H1> Necesitas iniciar secion para acceder a la pagina deseada</H1>
+    <img class= "ImagenPrin" src="{{ url_for('static', filename='Imágenes/Imagen_Estado_Coahuila.jpg') }}" alt="Imagen del Estado de Coahuila">
+    <label>Iniciar secion: 
+    <a href="/Adm" target="_self">
+        <button>Iniciar seccion</button>
+      </a>
+      <label>Regresar a la pagina de inicio: 
+        <a href="/" target="_self">
+            <button>Regresar</button>
+          </a>  
+{% endblock %}

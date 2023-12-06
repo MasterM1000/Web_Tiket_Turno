@@ -48,19 +48,26 @@
               <option value="Tutor">Tutor</option>
               <option value="Alumno">Alumno</option>
             </select>
+            <br>
+                <label>¿Asunto que se realizara en el tramite?
+                  <select name="Asunto">
+                    {% for asunto in asuntos %}
+                 <option value="{{ asunto[0] }}">{{ asunto[0] }}</option>
+                 {% endfor %}
 
       </fieldset>
-
-    <fieldset>
-      <legend>¿Qué asunto tratará?</legend>
-      <textarea name="Asunto" rows="5" cols="30" placeholder="Asunto a tratar" value="{{ DT.8 }}"></textarea>
-    </fieldset>
   </form>
-
+  
+  <label>Modificar ticket
     <button type="submit" form="form_Mod">Modificar</button>
-    
-  <a href="/" target="_self">
-    <button>Regresar al inicio</button>
-  </a>
+    <br>
+      <label>Regresar a la pagina de administradores
+      <a href="/Adm" target="_self">
+        <button>Regresar</button>
+      </a>
+      <label>Regresar a la pagina de inicio
+    <a href="/" target="_self">
+      <button>Regresar</button>
+    </a>
 
 {% endblock %}

@@ -1,0 +1,18 @@
+{%extends './Layout.html' %}
+{% block title %}Modificar administrador{% endblock %}
+{% block body %}
+<h1>Registre los datos para modificar el administrador</h1>
+<form action="/Mod_Adm" method="post" id="Mod_Adm">
+<fieldset>
+    <label>Id del Usuario:
+    <input type="text" name="Usuario" placeholder="Modifique el id de administrador" pattern="[0-9]{1,10}">
+      <label>Contraseña del Usuario:
+      <input type="text" name="Contraeña" placeholder="Modifique la contraeña ">
+</fieldset>
+</form>
+<br>
+<button type="submit" form="Mod_Adm">Modificar</button>
+<a href="/Adm" target="_self">
+    <button>Regresar a la pagina de administradores</button>
+  </a>
+{% endblock %}
